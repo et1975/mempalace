@@ -20,6 +20,7 @@ Tools (read):
   mempalace_get_taxonomy    — full wing → room → count tree
   mempalace_search          — semantic search, optional wing/room/source_file filter
   mempalace_check_duplicate — check if content already exists before filing
+  mempalace_find_duplicates — find read-only near-duplicate drawer clusters
 
 Tools (write):
   mempalace_add_drawer      — file verbatim content into a wing/room
@@ -120,6 +121,10 @@ from ..config import (  # noqa: E402
     wing_aliases,
 )
 from ..date_window import filed_at_in_window, parse_date_bound  # noqa: E402
+from ..duplicate_clusters import (  # noqa: E402
+    DEFAULT_THRESHOLD as DEDUP_DEFAULT_THRESHOLD,
+    find_duplicate_clusters,
+)
 from ..dynamics import (  # noqa: E402
     apply_decay,
     drawer_salience,
