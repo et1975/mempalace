@@ -216,6 +216,7 @@ _MCP_WRITER_LOCK_FAILED = False
 _MCP_WRITER_LOCK_ERROR = ""
 _MCP_WRITER_ATEXIT_REGISTERED = False
 _MCP_ALLOW_PEER_WRITER_ENV = "MEMPALACE_MCP_ALLOW_PEER_WRITER"
+_SALIENCE_POTENTIATE_ENV = "MEMPALACE_SALIENCE_POTENTIATE"
 
 _MUTATING_TOOLS = frozenset(
     {
@@ -441,6 +442,10 @@ _stale_library_reported_drift: list = []
 
 def _truthy_env(name: str) -> bool:
     return os.environ.get(name, "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 def _discard_mcp_storage_handles() -> None:
