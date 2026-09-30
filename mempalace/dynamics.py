@@ -146,8 +146,8 @@ def drawer_salience(drawer_metadata: dict, *, now: Optional[datetime] = None) ->
     if _parse_iso(record.get("last_activated")) is not None:
         apply_decay(record, now=now)
     return {
-        "strength": float(record.get("strength", DEFAULT_STRENGTH)),
-        "stability": float(record.get("stability", DEFAULT_STABILITY)),
+        "strength": round(float(record.get("strength", DEFAULT_STRENGTH)), 6),
+        "stability": round(float(record.get("stability", DEFAULT_STABILITY)), 6),
         "last_activated": record.get("last_activated"),
         "access_count": int(record.get("access_count", 0)),
     }
