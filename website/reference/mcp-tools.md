@@ -60,7 +60,7 @@ Full wing → room → drawer count tree.
 
 ### `mempalace_search`
 
-Semantic search. Returns verbatim drawer content with similarity scores and a lazy-decayed `salience` block. By default this is read-only. If `MEMPALACE_SALIENCE_POTENTIATE=true`, surfaced logical drawers are potentiated best-effort unless the MCP server is read-only or lacks the palace writer lock.
+Semantic search. Returns verbatim drawer content with similarity scores and a lazy-decayed `salience` block, including lexical-only union hits and SQLite fallback results. By default this is read-only. If `MEMPALACE_SALIENCE_POTENTIATE=true`, surfaced logical drawers are potentiated best-effort unless the MCP server is read-only, lacks the palace writer lock, or has disabled vector access. SQLite fallback remains read-only and does not reopen a damaged vector index to update salience.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -102,7 +102,7 @@ Check if content already exists in the palace before filing.
 
 ### `mempalace_find_duplicates`
 
-Read-only duplicate audit. Returns connected clusters of near-duplicate logical drawers with pairwise cosine distances — never raw vectors or content. Clusters are the connected components of the "distance < threshold" graph (similarity is symmetric but not transitive). Chunked drawers are deduped by `parent_drawer_id`, and each drawer's own chunks are never reported as duplicates of one another.
+Read-only duplicate audit. Returns connected clusters of near-duplicate logical drawers with pairwise cosine distances — never raw vectors or content. Clusters are the connected components of the "distance < threshold" graph (similarity is symmetric but not transitive). Chunked drawers are deduped by `parent_drawer_id`, falling back to legacy diary `parent_entry_id`, and each drawer's own chunks are never reported as duplicates of one another. When both `wing` and `room` are supplied, both filters apply.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -287,6 +287,11 @@ List lazy-decayed salience for logical drawers. Chunked drawers are deduped by `
 | `order_by` | string | No | Sort by `strength`, `access_count`, or `last_activated` (default `strength`) |
 
 **Returns:** `{ drawers: [{ id, wing, room, strength, stability, last_activated, access_count }] }`
+
+Salience reads leave stored metadata and drawer content unchanged. Invalid optional
+dynamics values are normalized for calculation rather than preventing content
+retrieval. Strength is computed at read time, so successive reads can differ even
+when no drawer has been updated.
 
 ---
 
