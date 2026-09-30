@@ -8,6 +8,10 @@ if __name__ != "mempalace.mcp_server":
 _SALIENCE_POTENTIATE_ENV = "MEMPALACE_SALIENCE_POTENTIATE"
 
 
+def _now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
 def _tool_status_via_sqlite() -> dict:
     """Pure-sqlite status reader for the diverged-HNSW fallback path.
 
@@ -781,9 +785,9 @@ def tool_search(
 
 
 def _can_potentiate_on_search() -> bool:
-    if not _truthy_env(_SALIENCE_POTENTIATE_ENV):
+    if not env_bool(_SALIENCE_POTENTIATE_ENV, False):
         return False
-    if _READ_ONLY:
+    if _READ_ONLY or _vector_disabled:
         return False
     if _MCP_WRITER_LOCK_CM is not None:
         return True
@@ -814,7 +818,7 @@ def _maybe_potentiate_search_results(hits: list[dict]) -> None:
     if not col:
         return
 
-    now = datetime.now(timezone.utc)
+    now = _now()
     for drawer_id in _logical_ids_from_search_hits(hits):
         try:
             record = _logical_drawer_record(col, drawer_id)
